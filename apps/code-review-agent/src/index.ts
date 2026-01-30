@@ -1,21 +1,28 @@
 import OpenAI from "openai";
-import { Agent, OpenAIResponsesModel, run } from "@openai/agents";
+import { Agent, run, setDefaultOpenAIClient } from "@openai/agents";
 
 const client = new OpenAI({
   baseURL: "http://localhost:5177/api/genai/v1",
   apiKey: "sk_nRLp9MiTTaP4lih61daijwx2qCIaNF8q",
-  defaultHeaders: {
-    "x-LLMOps-Prompt": "5vnsk4kd",
-  },
 });
+
+setDefaultOpenAIClient(client);
 
 const codeReviewAgent = new Agent({
   name: "Code Review Agent",
-  model: new OpenAIResponsesModel(client, "gpt-4o"),
+  model: "@openai/gpt-4o-mini",
+  instructions: `
+    You are an expert code reviewer. When given code, you:
+    - Identify bugs and potential issues
+    - Suggest improvements for readability and maintainability
+    - Check for security vulnerabilities
+    -  Recommend best practices
+    - Keep feedback concise and actionable
+  `,
   modelSettings: {
     providerData: {
-      input_variables: {
-        name: "tushar",
+      metadata: {
+        tenant: "genai",
       },
     },
   },
